@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -26,62 +27,67 @@ namespace TextSearcher
 		public event Action OnComplete;
 
 		private static readonly char[] LINE_BREAKERS = { '\n', '\r' };
-
+		private List<string> _files;
 		private string[] _needles;
 		private StringComparison _comparison;
 		private HashSet<string> _extensions;
-
-		private string _currentFilename;
-		private double _progress;
+		private int _searched;
 
 		/// <summary>
 		/// 在指定目录中查找所有字符串
 		/// </summary>
 		public void Search(string[] folders, string[] needles, string[] filters, bool ignoreCase)
 		{
+			_files = new List<string>();
 			_needles = needles;
 			_comparison = ignoreCase ? StringComparison.CurrentCultureIgnoreCase
 				: StringComparison.CurrentCulture;
 			_extensions = new HashSet<string>(filters);
 
+			//Collect files
+			double prog = 0.0, progAdv = 1.0 / folders.Length;
 			for (int i = 0; i < folders.Length; i++)
 			{
-				double pMax = (double)(i + 1) / folders.Length;
-				SearchInFolder(folders[i], pMax);
-				ReportProgress(pMax);
+				CollectInFolders(folders[i], prog, progAdv);
+				ReportProgress(prog += progAdv);
 			}
 
-			OnComplete?.Invoke();
+			//Check file count
+			if (_files.Count == 0)
+			{
+				OnComplete?.Invoke();
+				return;
+			}
+
+			//Search in files
+			ReportProgress(prog = 0.0);
+			progAdv = 1.0 / _files.Count;
+			Parallel.ForEach(_files, SearchInFile);
 		}
 
-		//查找指定目录
-		private void SearchInFolder(string folder, double pMax)
+		//在目录中收集文件
+		private void CollectInFolders(string folder, double progStart, double progAdv)
 		{
 			var files = Directory.GetFiles(folder);
 
+			//收集文件
 			foreach (var file in files)
-			{
-				if (!_extensions.Contains(Path.GetExtension(file)))
-					continue;
-				_currentFilename = file;
-				SearchInFile();
-			}
+				if (_extensions.Contains(Path.GetExtension(file)))
+					_files.Add(file);
 
 			var directories = Directory.GetDirectories(folder);
-			double p = _progress;
-			double pAdv = (pMax - p) / directories.Length;
+			progAdv /= directories.Length;
 			for (int i = 0; i < directories.Length; i++)
 			{
-				p += pAdv;
-				SearchInFolder(directories[i], p);
-				ReportProgress(p);
+				CollectInFolders(directories[i], progStart, progAdv);
+				ReportProgress(progStart += progAdv);
 			}
 		}
 
 		//在当前文件中查找
-		private void SearchInFile()
+		private void SearchInFile(string filename)
 		{
-			string[] lines = GetLines(_currentFilename);
+			string[] lines = GetLines(filename);
 			var needles = _needles;
 			var comparison = _comparison;
 
@@ -94,16 +100,23 @@ namespace TextSearcher
 					if(line.IndexOf(needle, comparison) >= 0)
 					{
 						// found
-						OnFound?.Invoke(needle, _currentFilename, line, lineNumber);
+						OnFound?.Invoke(needle, filename, line, lineNumber);
 					}
 				}
 			}
+
+			//Report progress
+			int searched = Interlocked.Increment(ref _searched);
+			if (searched < _files.Count)
+				ReportProgress((double)searched / _files.Count);
+			//All files are searched, complete
+			else
+				OnComplete?.Invoke();
 		}
 
 		//报告进度
 		private void ReportProgress(double progress)
 		{
-			_progress = progress;
 			OnProgress?.Invoke(progress);
 		}
 

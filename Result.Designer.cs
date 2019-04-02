@@ -29,9 +29,10 @@
 		private void InitializeComponent()
 		{
 			System.Windows.Forms.TabControl tabControl1;
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Result));
 			this.tabPage1 = new System.Windows.Forms.TabPage();
-			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.tvNeedles = new System.Windows.Forms.TreeView();
+			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.tvFiles = new System.Windows.Forms.TreeView();
 			tabControl1 = new System.Windows.Forms.TabControl();
 			tabControl1.SuspendLayout();
@@ -61,6 +62,14 @@
 			this.tabPage1.Text = "按查找内容";
 			this.tabPage1.UseVisualStyleBackColor = true;
 			// 
+			// tvNeedles
+			// 
+			this.tvNeedles.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tvNeedles.Location = new System.Drawing.Point(3, 3);
+			this.tvNeedles.Name = "tvNeedles";
+			this.tvNeedles.Size = new System.Drawing.Size(786, 418);
+			this.tvNeedles.TabIndex = 0;
+			// 
 			// tabPage2
 			// 
 			this.tabPage2.Controls.Add(this.tvFiles);
@@ -71,14 +80,6 @@
 			this.tabPage2.TabIndex = 1;
 			this.tabPage2.Text = "按文件";
 			this.tabPage2.UseVisualStyleBackColor = true;
-			// 
-			// tvNeedles
-			// 
-			this.tvNeedles.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tvNeedles.Location = new System.Drawing.Point(3, 3);
-			this.tvNeedles.Name = "tvNeedles";
-			this.tvNeedles.Size = new System.Drawing.Size(786, 418);
-			this.tvNeedles.TabIndex = 0;
 			// 
 			// tvFiles
 			// 
@@ -94,8 +95,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(tabControl1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Result";
-			this.ShowIcon = false;
 			this.Text = "Result";
 			tabControl1.ResumeLayout(false);
 			this.tabPage1.ResumeLayout(false);

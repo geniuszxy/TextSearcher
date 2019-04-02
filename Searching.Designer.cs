@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Searching));
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.SuspendLayout();
 			// 
@@ -37,16 +38,17 @@
 			this.progressBar.Location = new System.Drawing.Point(0, 0);
 			this.progressBar.Maximum = 1000;
 			this.progressBar.Name = "progressBar";
-			this.progressBar.Size = new System.Drawing.Size(504, 25);
+			this.progressBar.Size = new System.Drawing.Size(504, 27);
 			this.progressBar.TabIndex = 0;
 			// 
 			// Searching
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(504, 25);
+			this.ClientSize = new System.Drawing.Size(504, 27);
 			this.Controls.Add(this.progressBar);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Searching";
 			this.Text = "Searching";
 			this.ResumeLayout(false);
